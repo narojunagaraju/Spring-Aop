@@ -1,8 +1,7 @@
 package demo;
 
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
 @Aspect
@@ -10,7 +9,9 @@ import org.springframework.stereotype.Component;
 public class LoggingAspect {
 
     @Before("execution(* demo.ShoppingCart.checkout(..))")
-    public void logger() {
+    public void logger(JoinPoint joinPoint) {
+        System.out.println(joinPoint.getSignature());
+        System.out.println("Argument value is " + joinPoint.getArgs()[0]);
         System.out.println("loggers");
     }
 
@@ -19,9 +20,20 @@ public class LoggingAspect {
      * 2nd * for any package
      * .* for any class
      * .* for any method
-      */
+     */
     @After("execution(* *.*.checkout(..))")
     public void afterLogger() {
         System.out.println("After Logger");
+    }
+
+
+    @Pointcut("execution(* demo.ShoppingCart.quantity(..))")
+    public void afterReturningPointCut() {
+
+    }
+
+    @AfterReturning(pointcut = "afterReturningPointCut()", returning = "retVal")
+    public void afterReturning(String retVal) {
+        System.out.println("After returning "+retVal);
     }
 }
